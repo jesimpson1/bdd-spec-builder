@@ -1,0 +1,63 @@
+---
+name: bdd-spec-builder
+license: MIT
+description: >-
+  Creates reviewable Gherkin specifications and executable Cucumber.js
+  acceptance tests through guided requirements discovery. Use when defining
+  acceptance behaviour for a feature, refining Cucumber.js feature files,
+  or implementing agreed scenarios. Excludes standalone unit testing and
+  browser automation unrelated to Gherkin.
+---
+
+# BDD Spec Builder
+
+Use Gherkin `.feature` files and the `@cucumber/cucumber` JavaScript runner for this workflow. JavaScript is the demonstrated step-definition language. Reuse an established TypeScript setup when its Cucumber.js loading and execution are verified. The application under test may use another language. Codex, Copilot and Claude Code use the same skill instructions and project test commands.
+
+**Starting from ordinary language.** The user may supply a feature idea, a problem or a precise rule. Infer the relevant product vocabulary, scenario structure and test approach from the request and the project. Honour the requested scope, whether they want to explore requirements, review examples or implement agreed behaviour.
+
+**Discovering the intended behaviour.** Read the relevant project guidance, decisions, code and nearby tests that are available. Identify what is implemented, what has been agreed and what is still a proposal. For a new feature, inspect related behaviour for terminology and integration context. With an empty project, start from the user's goal and intended users. Existing code provides evidence of current behaviour; intended changes come from the request and agreed product decisions.
+
+When material rules are missing, briefly state what you understand and ask a focused product question before drafting a definitive outcome. Prioritise the unknown that changes the first useful scenario, such as who can act, what triggers the action or what result they should observe. First look up facts available in the project. Resolve Cucumber.js configuration, driver libraries, selectors and fixture mechanics from the project context.
+
+Work through questions in small rounds. Track which decisions depend on earlier answers and ask only questions whose prerequisites are settled. Independent questions can share a round; defer dependent questions until their prerequisite is answered. Use a concrete example and a few outcome choices when these help the user answer. Where evidence supports a recommendation, give it with a short reason and leave the choice explicit. After the answers, update what is settled and choose the next relevant question.
+
+Carry forward decisions already supplied by the user or agreed in the project. When a material rule comes from outside the current request, identify the recorded decision or earlier user instruction and preserve its scope. Describe an earlier answer as prior context so the reader can see why the question is settled. If its source is unavailable, present the outcome as a proposal for confirmation. Ask about exceptions, repeated actions and competing rules when they affect the behaviour being explored. Draft the first scenario once its actor, starting state, action and expected result are clear, keeping unrelated open questions visible for later. Continue discovery as subsequent scenarios expose further decisions.
+
+**Clarifying terms and preserving decisions.** Check important terms against the project's vocabulary. When a word such as customer, cancellation or completed has multiple plausible meanings, use contrasting business examples to establish the intended meaning. If the request conflicts with a recorded rule or current code, describe the difference and establish whether the user intends a change. Capture confirmed rules in the scenarios and keep unresolved choices explicit. When documentation updates are requested, record definitions and decision rationale in the project's existing owning documents, with links to the scenarios where helpful. A glossary defines terms; an acceptance scenario specifies behaviour. Reserve an architecture decision record for a consequential trade-off that benefits from preserving its rationale.
+
+**Drafting a specification.** Find the product rule in the request, an agreed specification, or a decision recorded by the team. Existing behaviour can suggest examples. Label it as an observation when the intended rule is still uncertain.
+
+Give each example a starting state, a business action and an observable outcome. Reuse the user's terms and concrete values. Prefer role names such as customer or shopper; introduce personal names or story details when they help distinguish actors or affect the rule. When values are absent, choose simple illustrative quantities and make the assumption visible. A rule such as the discount percentage needs an authoritative source or a product decision.
+
+When two interpretations would produce different results, show the smallest example on which they disagree and ask which outcome is intended. Draft resolved behaviour while clearly identifying any dependent scenario still awaiting a decision. For several requested rules, group the scenarios by behaviour and highlight decisions that need the user's attention. A request for a draft ends with the scenarios and any open product decision.
+
+**Presenting the draft.** When the next step needs a product decision, lead with that question and the concrete example needed to answer it. Include only enough resolved scenarios to support that decision. When presenting scenarios for review, put them first in a `gherkin` code block. Write scenario titles and steps so someone familiar with the product can judge the outcomes without knowing its implementation. State illustrative values and scope assumptions before the scenarios they qualify. Follow with a short plain-language explanation of how the outcome could be checked and any remaining open questions. Keep endpoints, method names, selectors and supporting code in the execution details when needed or requested. The user should be able to review the draft without prescribing its format or choosing a test library.
+
+Start a broad request with the smallest useful group covering its main outcomes. Identify further coverage briefly for later review. Keep scenarios focused on a recognisable business event and its consequences. For a longer sequence, make the intermediate states explicit and split independently meaningful behaviours into separate scenarios where that improves review. Explain unfamiliar product terms when first used. Describe interrupted processing in terms of the business outcome; keep database commit points and acknowledgement mechanics in the driver or detailed technical coverage where appropriate. After an answer, identify the decision incorporated and show the affected scenarios; provide a consolidated set when requested or useful for final review.
+
+**Choosing what the scenario mentions.** Imagine the same action arriving through a different route. If typing and scanning a promotion code both earn the same discount, express the pricing rule once. Give scanning its own example when the promise concerns reading the coupon, selecting the right basket or displaying the total at the till. If eligibility depends on the route, include the route in the rule itself.
+
+**Making an agreed example executable.**
+
+**Establish the execution scope before running commands.** Default to disposable local resources, synthetic data and simulated external effects. Inspect the effective application, database, queue, storage and provider configuration before starting Cucumber, loading application modules or launching workers. A localhost URL, test tag or environment name alone cannot establish isolation. Use an explicit test configuration with synthetic credentials and enforce runtime network access to the intended local resources across the runner, application, browser and workers. Configure the launcher to refuse an unverified target before any side effect. Read the [execution-scope guidance](references/cucumber-js.md#establish-execution-scope) when preparing a run.
+
+If a safe local dependency is missing, prepare an appropriate local substitute or report the blocked verification while continuing specification work. A live service is not an automatic fallback. External execution needs explicit authorization for the exact environment, accounts, data, recipients, actions, cost and volume limits. General permission to implement or run tests does not supply that authorization. Use small functional fixtures; run load or capacity workloads only within an explicitly requested performance scope and defined resource limits. Cleanup applies only to resources owned by this test run.
+
+Organise execution around four responsibilities, reusing the project's existing modules where possible:
+
+| Layer | Responsibility |
+| --- | --- |
+| Test cases | Gherkin scenarios state the starting conditions, business action and expected outcome. |
+| Domain-specific language (DSL) | Step definitions and reusable business operations give the scenario phrases precise meanings and check expectations against observations. |
+| Protocol drivers | Exercise the selected application interface and return observations. Keep URLs, request shapes, browser locators, transport handling and technical waits here. A direct application-call driver can serve focused rules. |
+| System under test | The actual application behaviour reached through that interface, including the relevant processing and persistence. |
+
+Cucumber.js connects the Gherkin sentences to the DSL's step definitions. Keep the business rule in the application and derive expected results from the agreed scenarios. Drivers exercise the application rather than calculate substitute outcomes. Changing a transport should principally affect its driver; revise a scenario when the user-visible promise or relevant input route changes. Match the code structure to the size of the example while preserving these responsibilities.
+
+1. Read nearby tests, package configuration and execution commands, including any separate acceptance repository. Reuse existing Cucumber.js setup, fixtures and drivers where they fit. If it is missing, add the smallest Cucumber.js integration needed for the requested example, following the project's package-manager and module conventions. Read the [Cucumber.js execution guide](references/cucumber-js.md) when wiring or changing execution. Existing tests inform and complement the acceptance suite; any shared fixture code needs lifecycle management under Cucumber.js.
+2. Map the business phrases to reusable step definitions. Let a driver handle details such as HTTP requests, browser actions or a call to a public application operation. Choose the quickest route that reaches the promised outcome. A claim about a displayed total needs an observation at the display. A pricing rule can usually exercise checkout directly. Keep expected values independent of the implementation's calculation. Give timing and concurrency claims observable meanings: define the completion point for an immediate outcome, and exercise overlapping operations when the scenario requires concurrency. Resolve a missing product deadline with the user; choose harness mechanics from the project.
+3. For new behaviour, run the focused scenario and confirm the expected assertion fails for the missing behaviour. Resolve setup errors or undefined steps before counting the run as red. If an existing implementation already passes, report that result. A temporary, reversible change to the behaviour in a disposable copy can demonstrate that the assertion detects its loss.
+4. When implementation is requested, make the change and rerun the scenario and relevant existing checks. Keep the agreed meaning intact. If fulfilling the request would require changing the expected result, surface the proposed revision for review. For asynchronous outcomes, wait for an observable completion point before asserting that something never happened.
+5. Report the scenario, command, observed outcome, interface exercised and execution scope, including the isolation controls and any external actions. Identify any unexecuted scenarios or scope limits that affect the claim. For example, an in-process checkout run establishes pricing behaviour but leaves scanner integration unverified.
+
+For a runnable demonstration of these seams, start with the [shop feature](examples/shop/features/promotions.feature) and follow its [step definitions](examples/shop/features/steps.js) into the driver. The [review guide](README.md) includes the example command and a prompt to try in different agents.
